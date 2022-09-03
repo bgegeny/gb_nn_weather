@@ -1,25 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import './App.scss';
+import React from 'react';
+import {
+    BrowserRouter, Routes, Route, Navigate,
+} from "react-router-dom";
+import Main from "./ui/Main";
 
-function App() {
-
-    const [ latitude, setLatitude ] = useState(0)
-    const [ longitude, setLongitude ] = useState(0)
-
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            setLongitude(position.coords.latitude);
-            setLongitude(position.coords.longitude);
-        });
-    }, []);
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        NN Weather App
-      </header>
-    </div>
-  );
+const App = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/weather" element={<Main />} />
+                <Route path="*" element={<Navigate to="/weather" />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
