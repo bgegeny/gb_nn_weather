@@ -58,5 +58,16 @@ html, body {
 }
 
 .weather-component {
+  margin: 5px;
   width: 400px;
+}
+
+.current-temp {
+  display: flex;
+  align-items: center;
+}
+
+.thermometer-img {
+  margin-right: 10px;
+  width: 50px;
 }
