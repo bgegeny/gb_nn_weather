@@ -1,9 +1,8 @@
 import '../styles/common.scss'
-import UserLocationWidget from "./UserLocationWidget/UserLocationWidget";
-import CitiesWidget from "./CitiesWidget/CitiesWidget";
-import SetupComponent from "./SetupComponent";
-import { useAppSelector } from "../hooks";
-import { useEffect } from "react";
+import UserLocationWidget from './UserLocationWidget/UserLocationWidget';
+import CitiesWidget from './CitiesWidget/CitiesWidget';
+import SetupComponent from './SetupComponent';
+import { useAppSelector } from '../hooks';
 
 const Main = () => {
 
@@ -20,7 +19,7 @@ const Main = () => {
                     unit={unit}
                 />
                 <div
-                    className='weather-widgets'
+                    className="weather-widgets"
                 >
                     <UserLocationWidget />
                     <CitiesWidget />

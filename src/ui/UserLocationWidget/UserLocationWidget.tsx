@@ -1,15 +1,16 @@
-import {useEffect, useState} from 'react';
-
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import {useAppSelector} from "../../hooks";
 
 const UserLocationWidget = () => {
 
     const [ latitude, setLatitude ] = useState(0);
     const [ longitude, setLongitude ] = useState(0);
     const [ widgetStateMsg, setWidgetStateMsg ] = useState('');
+    const unit = useAppSelector(state => state.units.value);
 
     useEffect(() => {
         const showPosition = () => {
-            // If geolocation is available, try to get the visitor's position
             if(navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
                 setWidgetStateMsg('Getting the position information...');
@@ -20,6 +21,36 @@ const UserLocationWidget = () => {
 
         showPosition();
     }, []);
+
+    useEffect(() => {
+        let interval: ReturnType<typeof setTimeout>;
+        const currentDate = new Date();
+        const nextRequestTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), currentDate.getHours()+1);
+        const timeOutValue = nextRequestTime.getTime() - currentDate.getTime();
+
+
+        async function getWeatherData() {
+            try {
+                const link = `https://api.openweathermap.org/data/2.5/onecall?units=${unit.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=a23560fa3f2603966851cd344571833b`;
+                const response = await axios.get(link);
+                console.log(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        getWeatherData();
+
+        setTimeout(() => {
+            getWeatherData();
+            interval = setInterval(() => {
+                getWeatherData();
+            }, 60*60*1000);
+        }, timeOutValue);
+
+        return () => {
+            clearInterval(interval);
+        }
+    }, [latitude, longitude, unit])
 
     function successCallback(position: GeolocationPosition) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -41,13 +72,16 @@ const UserLocationWidget = () => {
         }
     }
 
-    const link = 'https://api.openweathermap.org/data/2.5/onecall?lat=33.44&lon=-94.04&exclude=hourly,daily&appid=a23560fa3f2603966851cd344571833b';
-
     return (
         <div
             className='component weather-component text-center'
         >
-            {widgetStateMsg}
+            { (longitude && latitude) ?
+                <>
+
+                </> :
+                widgetStateMsg
+            }
         </div>
     );
 }

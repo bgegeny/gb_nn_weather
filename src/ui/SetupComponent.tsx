@@ -1,7 +1,7 @@
-import {useAppDispatch, useAppSelector} from '../hooks';
+import { useAppDispatch } from '../hooks';
 import { darkModeSlice } from '../features/dark-mode-slice';
-import {units} from "./constants";
-import {unitsSlice} from "../features/units-slice";
+import {units} from './constants';
+import {unitsSlice} from '../features/units-slice';
 
 const SetupComponent = (props: {
     darkMode: boolean,
@@ -50,9 +50,6 @@ const SetupComponent = (props: {
                     {unit === units.METRIC ? units.METRIC : units.IMPERIAL}
                 </button>
             </div>
-
-
-
         </div>
     );
 }
