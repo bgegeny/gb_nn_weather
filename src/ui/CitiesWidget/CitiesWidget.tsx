@@ -4,7 +4,7 @@ const CitiesWidget = () => {
 
     return (
         <div
-            className='component'
+            className="component weather-component text-center"
         >
             CitiesWidget
         </div>

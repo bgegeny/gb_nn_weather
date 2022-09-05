@@ -2,9 +2,11 @@
 const CurrentWeather = () => {
 
     return (
-        <>
+        <div
+            className=""
+        >
             CurrentWeather
-        </>
+        </div>
     );
 }
 

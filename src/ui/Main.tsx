@@ -19,8 +19,13 @@ const Main = () => {
                     darkMode={darkMode}
                     unit={unit}
                 />
-                <UserLocationWidget />
-                <CitiesWidget />
+                <div
+                    className='weather-widgets'
+                >
+                    <UserLocationWidget />
+                    <CitiesWidget />
+                </div>
+
             </div>
         </>
     );
