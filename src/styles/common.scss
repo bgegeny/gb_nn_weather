@@ -1,3 +1,45 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.main {
+  height: 100vh;
+  width: 100vw;
+}
+
 .component {
-  margin: 10px;
+  padding: 10px;
+}
+
+.setup-component {
+  display: flex;
+  justify-content: center;
+}
+
+.layout-selector {
+  margin: 5px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.metric-selector {
+  margin: 5px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.dark-mode {
+  color: #FFFDD0;
+  background-color: #000000;
+}
+
+.light-mode {
+  color: #000000;
+  background-color: #FFFFFF;
 }
