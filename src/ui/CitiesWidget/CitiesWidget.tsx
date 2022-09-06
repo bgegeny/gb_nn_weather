@@ -4,15 +4,34 @@ import {cityCodes, units} from "../constants";
 import {useEffect, useState} from "react";
 import axios from "axios";
 
+interface CityInformation {
+    name: string,
+    coord: { lon: number, lat: number },
+    main: { temp: number },
+}
+
 
 const CitiesWidget = () => {
 
     const darkMode = useAppSelector(state => state.darkMode.value);
     const unit = useAppSelector(state => state.units.value);
-    const [ currentMetricInformation, setCurrentMetricInformation ] = useState([]);
-    const [ currentImperialInformation, setCurrentImperialInformation ] = useState([]);
-    const [ cityName, setCityName ] = useState('John Doe City');
+    const [ currentCityIndex, setCurrentCityIndex ] = useState(0);
+    const [ cityLoopInterval, setCityLoopInterval ] = useState(5000);
+    const [ currentMetricInformation, setCurrentMetricInformation ] = useState(new Array<CityInformation>());
+    const [ currentImperialInformation, setCurrentImperialInformation ] = useState(new Array<CityInformation>());
     const [ widgetStateMsg, setWidgetStateMsg ] = useState('Getting the position information...');
+
+    useEffect(() => {
+        let interval = setInterval(() => {
+            if(currentMetricInformation.length !== 0 && currentImperialInformation.length !== 0) {
+                setCurrentCityIndex(value => currentImperialInformation.length-1 !== value ?  value+1 : 0);
+            }
+        }, cityLoopInterval);
+
+        return () => {
+            clearInterval(interval);
+        }
+    }, [cityLoopInterval, currentMetricInformation.length, currentImperialInformation.length])
 
     useEffect(() => {
         let interval: ReturnType<typeof setTimeout>;
@@ -27,11 +46,16 @@ const CitiesWidget = () => {
 
         async function getCitiesWeatherData() {
             try {
-                const metricLink = `https://api.openweathermap.org/data/2.5/group?id=${cityCodes.SZEGED},${cityCodes.BAJA},${cityCodes.BUDAPEST},${cityCodes.EGER},${cityCodes.PECS},${cityCodes.SOPRON}&units=${units.METRIC.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
-                const imperialLink = `https://api.openweathermap.org/data/2.5/group?id=${cityCodes.SZEGED},${cityCodes.BAJA},${cityCodes.BUDAPEST},${cityCodes.EGER},${cityCodes.PECS},${cityCodes.SOPRON}&units=${units.IMPERIAL.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
+                const metricLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}&units=${units.METRIC.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
+                const imperialLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}}&units=${units.IMPERIAL.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
                 const metricResponse = await axios.get(metricLink);
                 const imperialResponse = await axios.get(imperialLink);
+                console.log(metricResponse.data.list);
+                console.log(typeof metricResponse.data.list[0].coord.lon);
+                setCurrentMetricInformation(metricResponse.data.list);
+                setCurrentImperialInformation(imperialResponse.data.list);
             } catch (error) {
+                setWidgetStateMsg('Unknown Error occured, please try again later!')
                 console.error(error);
             }
         }
@@ -54,10 +78,14 @@ const CitiesWidget = () => {
         <div
             className={`component weather-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
         >
-            { (currentImperialInformation.length === 0 && currentImperialInformation.length === 0) ?
+            { (currentMetricInformation.length !== 0 && currentImperialInformation.length !== 0) ?
                 <>
-                    { cityName !== '' ? <div className="text-center">{cityName}</div> : undefined}
-
+                    <div className="text-center">{currentMetricInformation[currentCityIndex].name}</div>
+                    <CurrentWeather
+                        lon={currentMetricInformation[currentCityIndex].coord.lon.toFixed(2)}
+                        lat={currentMetricInformation[currentCityIndex].coord.lat.toFixed(2)}
+                        currentTemperature={unit === units.METRIC ? currentMetricInformation[currentCityIndex].main.temp : currentImperialInformation[currentCityIndex].main.temp}
+                    />
                 </> :
                 widgetStateMsg
             }

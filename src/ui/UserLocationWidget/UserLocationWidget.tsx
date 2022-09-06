@@ -101,12 +101,14 @@ const UserLocationWidget = () => {
 
     return (
         <div
-            className={`component weather-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
+            className={`component user-location-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
         >
             { (longitude && latitude) ?
                 <>
-                { cityName !== '' ? <div className="text-center">{cityName}</div> : undefined}
+                    { cityName !== '' ? <div className="text-center">{cityName}</div> : undefined}
                     <CurrentWeather
+                        lon={longitude.toFixed(2)}
+                        lat={latitude.toFixed(2)}
                         currentTemperature={unit === units.METRIC ? currentMetricTemperature : currentImperialTemperature}
                     />
                 </> :
