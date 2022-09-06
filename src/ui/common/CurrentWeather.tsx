@@ -15,15 +15,15 @@ const CurrentWeather = (props: {
     return (
         <>
             <div
-                className="text-center pb-3 border-bottom"
+                className="text-center border-bottom"
             >
                 Latitude: {lat} Longitude: {lon}
             </div>
             <div
-                className="current-temp pt-3"
+                className="current-temp pb-3 pt-3 border-bottom"
             >
-                <img alt='Thermometer' className="thermometer-img" src='./thermometer.jpg'/>
-                <div>Current Temperature: {`${props.currentTemperature} ${unit === units.METRIC ? '°C' : '°F'}`}</div>
+                <img alt='Thermometer' id="thermometer-img" src='./thermometer.jpg'/>
+                <div>Current Temperature: {`${currentTemperature} ${unit === units.METRIC ? '°C' : '°F'}`}</div>
             </div>
         </>
 

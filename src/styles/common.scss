@@ -72,7 +72,17 @@ html, body {
   align-items: center;
 }
 
-.thermometer-img {
+#thermometer-img {
   margin-right: 10px;
   width: 50px;
+}
+
+#day-night-img {
+  margin-right: 10px;
+  width: 50px;
+}
+
+table {
+  margin-bottom: 0px !important;
+  white-space:nowrap;
 }

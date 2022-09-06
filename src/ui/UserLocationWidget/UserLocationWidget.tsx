@@ -3,6 +3,8 @@ import axios from 'axios';
 import {useAppSelector} from "../../hooks";
 import CurrentWeather from "../common/CurrentWeather";
 import {units} from "../constants";
+import HourlyWeatherWidget from "./HourlyWeatherWidget";
+import DailyWeatherWidget from "./DailyWeatherWidget";
 
 const UserLocationWidget = () => {
 
@@ -12,6 +14,10 @@ const UserLocationWidget = () => {
     const [ widgetStateMsg, setWidgetStateMsg ] = useState('Getting the position information...');
     const [ currentMetricTemperature, setCurrentMetricTemperature ] = useState(0);
     const [ currentImperialTemperature, setCurrentImperialTemperature ] = useState(0);
+    const [ hourlyMetricForecast, setHourlyMetricForecast ] = useState(new Array<{ dt: number, temp: number }>(12));
+    const [ hourlyImperialForecast, setHourlyImperialForecast ] = useState(new Array<{ dt: number, temp: number }>(12));
+    const [ dailyMetricForecast, setDailyMetricForecast ] = useState(new Array<{ dt: number, temp: { day: number, night: number } }>(6));
+    const [ dailyImperialForecast, setDailyImperialForecast ] = useState(new Array<{ dt: number, temp: { day: number, night: number } }>(6));
     const unit = useAppSelector(state => state.units.value);
     const darkMode = useAppSelector(state => state.darkMode.value);
 
@@ -40,12 +46,19 @@ const UserLocationWidget = () => {
 
         async function getWeatherData() {
             try {
-                const metricLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.METRIC.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=a23560fa3f2603966851cd344571833b`;
-                const imperialLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.IMPERIAL.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=a23560fa3f2603966851cd344571833b`;
+                const metricLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.METRIC.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=142f9ff9f92c3016c4bcf76c093b8b64`;
+                const imperialLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.IMPERIAL.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=142f9ff9f92c3016c4bcf76c093b8b64`;
                 const metricResponse = await axios.get(metricLink);
                 const imperialResponse = await axios.get(imperialLink);
                 setCurrentMetricTemperature(metricResponse.data.current.temp);
                 setCurrentImperialTemperature(imperialResponse.data.current.temp);
+
+                console.log(metricResponse.data)
+
+                setHourlyMetricForecast(metricResponse.data.hourly.slice(1,13));
+                setHourlyImperialForecast(imperialResponse.data.hourly.slice(1,13));
+                setDailyMetricForecast(metricResponse.data.daily.slice(1,7));
+                setDailyImperialForecast(imperialResponse.data.daily.slice(1,7));
 
             } catch (error) {
                 console.error(error);
@@ -103,6 +116,7 @@ const UserLocationWidget = () => {
         <div
             className={`component user-location-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
         >
+            <div className="text-center fw-bold">Current Location</div>
             { (longitude && latitude) ?
                 <>
                     { cityName !== '' ? <div className="text-center">{cityName}</div> : undefined}
@@ -110,6 +124,12 @@ const UserLocationWidget = () => {
                         lon={longitude.toFixed(2)}
                         lat={latitude.toFixed(2)}
                         currentTemperature={unit === units.METRIC ? currentMetricTemperature : currentImperialTemperature}
+                    />
+                    <HourlyWeatherWidget
+                        forecast={unit === units.METRIC ? hourlyMetricForecast : hourlyImperialForecast}
+                    />
+                    <DailyWeatherWidget
+                        forecast={unit === units.METRIC ? dailyMetricForecast : dailyImperialForecast}
                     />
                 </> :
                 widgetStateMsg

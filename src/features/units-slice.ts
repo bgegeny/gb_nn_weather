@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../store'
-import {units} from "../ui/constants";
+import { units } from "../ui/constants";
+import {getLocalStorageValue, setLocalStorageValue} from "./slice-helper";
 
 interface UnitsState {
     value: string
 }
 
 const initialState: UnitsState = {
-    value: units.METRIC,
+    value: getLocalStorageValue('unit', units.METRIC),
 }
 
 export const unitsSlice = createSlice({
@@ -15,7 +16,10 @@ export const unitsSlice = createSlice({
     // `createSlice` will infer the state type from the `initialState` argument
     initialState,
     reducers: {
-        toggle: (state) =>  { state.value = state.value === units.METRIC ? state.value=units.IMPERIAL : state.value=units.METRIC }
+        toggle: (state) =>  {
+            state.value = state.value === units.METRIC ? state.value=units.IMPERIAL : state.value=units.METRIC
+            setLocalStorageValue('unit', state.value);
+        }
     },
 })
 

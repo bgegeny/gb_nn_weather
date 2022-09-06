@@ -1,8 +1,11 @@
-import {useAppSelector} from "../../hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks";
 import CurrentWeather from "../common/CurrentWeather";
 import {cityCodes, units} from "../constants";
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
+import _ from 'underscore';
+import {darkModeSlice} from "../../features/dark-mode-slice";
+import {intervalSlice} from "../../features/interval-slice";
 
 interface CityInformation {
     name: string,
@@ -13,10 +16,12 @@ interface CityInformation {
 
 const CitiesWidget = () => {
 
+    const dispatch = useAppDispatch();
+
     const darkMode = useAppSelector(state => state.darkMode.value);
     const unit = useAppSelector(state => state.units.value);
+    const cityLoopInterval = useAppSelector(state => state.interval.value);
     const [ currentCityIndex, setCurrentCityIndex ] = useState(0);
-    const [ cityLoopInterval, setCityLoopInterval ] = useState(5000);
     const [ currentMetricInformation, setCurrentMetricInformation ] = useState(new Array<CityInformation>());
     const [ currentImperialInformation, setCurrentImperialInformation ] = useState(new Array<CityInformation>());
     const [ widgetStateMsg, setWidgetStateMsg ] = useState('Getting the position information...');
@@ -50,8 +55,6 @@ const CitiesWidget = () => {
                 const imperialLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}}&units=${units.IMPERIAL.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
                 const metricResponse = await axios.get(metricLink);
                 const imperialResponse = await axios.get(imperialLink);
-                console.log(metricResponse.data.list);
-                console.log(typeof metricResponse.data.list[0].coord.lon);
                 setCurrentMetricInformation(metricResponse.data.list);
                 setCurrentImperialInformation(imperialResponse.data.list);
             } catch (error) {
@@ -74,18 +77,42 @@ const CitiesWidget = () => {
         }
     }, []);
 
+    const handleIntervalChange = _.debounce(async (e: ChangeEvent) => {
+        if(!_.isNaN(parseFloat((e.target as HTMLInputElement).value))) {
+            dispatch(intervalSlice.actions.set(parseFloat((e.target as HTMLInputElement).value)*1000));
+        }
+    }, 500);
+
     return (
         <div
             className={`component weather-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
         >
             { (currentMetricInformation.length !== 0 && currentImperialInformation.length !== 0) ?
                 <>
+                    <div className="text-center fw-bold">Cities around Hungary</div>
                     <div className="text-center">{currentMetricInformation[currentCityIndex].name}</div>
                     <CurrentWeather
                         lon={currentMetricInformation[currentCityIndex].coord.lon.toFixed(2)}
                         lat={currentMetricInformation[currentCityIndex].coord.lat.toFixed(2)}
                         currentTemperature={unit === units.METRIC ? currentMetricInformation[currentCityIndex].main.temp : currentImperialInformation[currentCityIndex].main.temp}
                     />
+                    <div
+                        className="interval-setter"
+                    >
+
+                        <label
+                            htmlFor="setInterval"
+                            className="m-1"
+                        >
+                            Interval (in s):
+                        </label>
+                        <input
+                            type="number"
+                            name="setInterval"
+                            placeholder={(cityLoopInterval/1000).toString()}
+                            onChange={handleIntervalChange}
+                        />
+                    </div>
                 </> :
                 widgetStateMsg
             }

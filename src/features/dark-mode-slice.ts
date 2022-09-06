@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
+import {getLocalStorageValue, setLocalStorageValue} from "./slice-helper";
 
 interface DarkModeState {
     value: boolean
 }
 
 const initialState: DarkModeState = {
-    value: false,
+    value: getLocalStorageValue('darkMode', false),
 }
 
 export const darkModeSlice = createSlice({
@@ -14,10 +15,11 @@ export const darkModeSlice = createSlice({
     reducers: {
         toggle: (state) =>  {
             state.value = !state.value;
+            setLocalStorageValue('darkMode', state.value)
         }
     },
 })
 
-export const { toggle } = darkModeSlice.actions
+export const { toggle } = darkModeSlice.actions;
 
-export default darkModeSlice.reducer
+export default darkModeSlice.reducer;
