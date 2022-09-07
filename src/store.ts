@@ -1,6 +1,6 @@
-import unitsReducer from "./features/units-slice";
-import darkModeReducer from "./features/dark-mode-slice";
-import intervalReducer from "./features/interval-slice";
+import unitsReducer from "./api/redux/units-slice";
+import darkModeReducer from "./api/redux/dark-mode-slice";
+import intervalReducer from "./api/redux/interval-slice";
 import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({

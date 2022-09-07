@@ -1,5 +1,5 @@
-import {useAppSelector} from "../../hooks";
-import {units} from "../constants";
+import {useAppSelector} from "../../api/hooks/redux-hooks";
+import {units} from "../../api/constants/open-weather-constants";
 
 const HourlyWeatherWidget = (props: {
     forecast: Array<{ dt: number, temp: number }>

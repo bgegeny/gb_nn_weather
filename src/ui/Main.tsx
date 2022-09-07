@@ -1,8 +1,8 @@
-import '../styles/common.scss'
+import '../ui/_styles/common.scss'
 import UserLocationWidget from './UserLocationWidget/UserLocationWidget';
 import CitiesWidget from './CitiesWidget/CitiesWidget';
 import SetupComponent from './SetupComponent';
-import { useAppSelector } from '../hooks';
+import { useAppSelector } from '../api/hooks/redux-hooks';
 
 const Main = () => {
 

@@ -11,3 +11,7 @@ export const cityCodes = {
     EGER: 721239,
     SOPRON: 3045190,
 };
+
+export const openWeatherMapApiKey = 'a23560fa3f2603966851cd344571833b';
+
+

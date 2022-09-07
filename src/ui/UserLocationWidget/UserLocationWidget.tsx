@@ -1,17 +1,20 @@
 import {useEffect, useState} from 'react';
 import axios from 'axios';
-import {useAppSelector} from "../../hooks";
+import {useAppSelector} from "../../api/hooks/redux-hooks";
 import CurrentWeather from "../common/CurrentWeather";
-import {units} from "../constants";
+import { openWeatherMapApiKey, units } from "../../api/constants/open-weather-constants";
+import { widgetMessages } from "../../api/constants/widget-constants";
 import HourlyWeatherWidget from "./HourlyWeatherWidget";
 import DailyWeatherWidget from "./DailyWeatherWidget";
 
+const { prepareText, unknownError, htmlGeolocationError, getPositionDeclineError, networkError, timeOutError } = widgetMessages;
+
 const UserLocationWidget = () => {
 
-    const [ latitude, setLatitude ] = useState(0);
-    const [ longitude, setLongitude ] = useState(0);
+    const [ latitude, setLatitude ] = useState<number>();
+    const [ longitude, setLongitude ] = useState<number>();
     const [ cityName, setCityName ] = useState();
-    const [ widgetStateMsg, setWidgetStateMsg ] = useState('Getting the position information...');
+    const [ widgetStateMsg, setWidgetStateMsg ] = useState(prepareText);
     const [ currentMetricTemperature, setCurrentMetricTemperature ] = useState(0);
     const [ currentImperialTemperature, setCurrentImperialTemperature ] = useState(0);
     const [ hourlyMetricForecast, setHourlyMetricForecast ] = useState(new Array<{ dt: number, temp: number }>(12));
@@ -26,7 +29,7 @@ const UserLocationWidget = () => {
             if(navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
             } else {
-                setWidgetStateMsg('Sorry, your browser does not support HTML5 geolocation.');
+                setWidgetStateMsg(htmlGeolocationError);
             }
         };
 
@@ -45,28 +48,21 @@ const UserLocationWidget = () => {
         const timeOutValue = nextRequestTime.getTime() - currentDate.getTime();
 
         async function getWeatherData() {
-            try {
-                const metricLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.METRIC.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=142f9ff9f92c3016c4bcf76c093b8b64`;
-                const imperialLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.IMPERIAL.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=142f9ff9f92c3016c4bcf76c093b8b64`;
+                const metricLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.METRIC.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${openWeatherMapApiKey}`;
+                const imperialLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.IMPERIAL.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${openWeatherMapApiKey}`;
                 const metricResponse = await axios.get(metricLink);
                 const imperialResponse = await axios.get(imperialLink);
                 setCurrentMetricTemperature(metricResponse.data.current.temp);
                 setCurrentImperialTemperature(imperialResponse.data.current.temp);
 
-                console.log(metricResponse.data)
-
                 setHourlyMetricForecast(metricResponse.data.hourly.slice(1,13));
                 setHourlyImperialForecast(imperialResponse.data.hourly.slice(1,13));
                 setDailyMetricForecast(metricResponse.data.daily.slice(1,7));
                 setDailyImperialForecast(imperialResponse.data.daily.slice(1,7));
-
-            } catch (error) {
-                console.error(error);
-            }
         }
 
         async function getLocation() {
-            const link = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=a23560fa3f2603966851cd344571833b`;
+            const link = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${openWeatherMapApiKey}`;
             const response = await axios.get(link);
             if(response.data[0]) {
                 setCityName(response.data[0].name);
@@ -74,9 +70,16 @@ const UserLocationWidget = () => {
         }
 
         const getUserLocationData = () => {
-            getLocation();
-            getWeatherData();
-        }
+            try {
+                if(latitude && longitude) {
+                    getLocation();
+                    getWeatherData();
+                }
+            }catch (error) {
+                    setWidgetStateMsg(unknownError)
+                    console.error(error);
+                }
+            }
 
         getUserLocationData();
 
@@ -94,7 +97,6 @@ const UserLocationWidget = () => {
 
     function successCallback(position: GeolocationPosition) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            setWidgetStateMsg(`POSITION -> Latitude: ${position.coords.latitude} Longitude: ${position.coords.longitude}`)
             setLatitude(position.coords.latitude);
             setLongitude(position.coords.longitude);
         });
@@ -102,13 +104,13 @@ const UserLocationWidget = () => {
 
     function errorCallback(error: { code: number }) {
         if(error.code === 1) {
-            setWidgetStateMsg('You\'ve decided not to share your position, unfortunately it\'s necessary for the app to work properly.');
+            setWidgetStateMsg(getPositionDeclineError);
         } else if(error.code === 2) {
-            setWidgetStateMsg('The network is down or the positioning service can\'t be reached.');
+            setWidgetStateMsg(networkError);
         } else if(error.code === 3) {
-            setWidgetStateMsg('The attempt timed out before it could get the location data.');
+            setWidgetStateMsg(timeOutError);
         } else {
-            setWidgetStateMsg('Geolocation failed due to unknown error.');
+            setWidgetStateMsg(unknownError);
         }
     }
 

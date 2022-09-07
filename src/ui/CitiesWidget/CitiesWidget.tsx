@@ -1,11 +1,11 @@
-import {useAppDispatch, useAppSelector} from "../../hooks";
-import CurrentWeather from "../common/CurrentWeather";
-import {cityCodes, units} from "../constants";
-import {ChangeEvent, useEffect, useState} from "react";
-import axios from "axios";
+import { ChangeEvent, useEffect, useState } from 'react';
+import axios from 'axios';
 import _ from 'underscore';
-import {darkModeSlice} from "../../features/dark-mode-slice";
-import {intervalSlice} from "../../features/interval-slice";
+import {useAppDispatch, useAppSelector} from '../../api/hooks/redux-hooks';
+import { intervalSlice } from '../../api/redux/interval-slice';
+import { cityCodes, openWeatherMapApiKey, units } from '../../api/constants/open-weather-constants';
+import { widgetMessages } from '../../api/constants/widget-constants';
+import CurrentWeather from '../common/CurrentWeather';
 
 interface CityInformation {
     name: string,
@@ -13,6 +13,7 @@ interface CityInformation {
     main: { temp: number },
 }
 
+const { prepareText, unknownError } = widgetMessages;
 
 const CitiesWidget = () => {
 
@@ -21,10 +22,12 @@ const CitiesWidget = () => {
     const darkMode = useAppSelector(state => state.darkMode.value);
     const unit = useAppSelector(state => state.units.value);
     const cityLoopInterval = useAppSelector(state => state.interval.value);
+
     const [ currentCityIndex, setCurrentCityIndex ] = useState(0);
     const [ currentMetricInformation, setCurrentMetricInformation ] = useState(new Array<CityInformation>());
     const [ currentImperialInformation, setCurrentImperialInformation ] = useState(new Array<CityInformation>());
-    const [ widgetStateMsg, setWidgetStateMsg ] = useState('Getting the position information...');
+
+    const [ widgetStateMsg, setWidgetStateMsg ] = useState(prepareText);
 
     useEffect(() => {
         let interval = setInterval(() => {
@@ -51,14 +54,14 @@ const CitiesWidget = () => {
 
         async function getCitiesWeatherData() {
             try {
-                const metricLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}&units=${units.METRIC.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
-                const imperialLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}}&units=${units.IMPERIAL.toLowerCase()}&appid=a23560fa3f2603966851cd344571833b`;
+                const metricLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}&units=${units.METRIC.toLowerCase()}&appid=${openWeatherMapApiKey}`;
+                const imperialLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}}&units=${units.IMPERIAL.toLowerCase()}&appid=${openWeatherMapApiKey}`;
                 const metricResponse = await axios.get(metricLink);
                 const imperialResponse = await axios.get(imperialLink);
                 setCurrentMetricInformation(metricResponse.data.list);
                 setCurrentImperialInformation(imperialResponse.data.list);
             } catch (error) {
-                setWidgetStateMsg('Unknown Error occured, please try again later!')
+                setWidgetStateMsg(unknownError);
                 console.error(error);
             }
         }

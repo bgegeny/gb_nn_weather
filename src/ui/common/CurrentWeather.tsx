@@ -1,5 +1,5 @@
-import { useAppSelector } from '../../hooks';
-import { units } from '../constants';
+import { useAppSelector } from '../../api/hooks/redux-hooks';
+import { units } from '../../api/constants/open-weather-constants';
 
 const CurrentWeather = (props: {
     lon: string,

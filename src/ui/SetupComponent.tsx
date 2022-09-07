@@ -1,7 +1,7 @@
-import { useAppDispatch } from '../hooks';
-import { darkModeSlice } from '../features/dark-mode-slice';
-import {units} from './constants';
-import {unitsSlice} from '../features/units-slice';
+import { useAppDispatch } from '../api/hooks/redux-hooks';
+import { darkModeSlice } from '../api/redux/dark-mode-slice';
+import {units} from '../api/constants/open-weather-constants';
+import {unitsSlice} from '../api/redux/units-slice';
 
 const SetupComponent = (props: {
     darkMode: boolean,
