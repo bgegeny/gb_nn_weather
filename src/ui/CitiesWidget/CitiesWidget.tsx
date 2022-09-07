@@ -3,8 +3,11 @@ import axios from 'axios';
 import _ from 'underscore';
 import {useAppDispatch, useAppSelector} from '../../api/hooks/redux-hooks';
 import { intervalSlice } from '../../api/redux/interval-slice';
-import { cityCodes, openWeatherMapApiKey, units } from '../../api/constants/open-weather-constants';
+import { weatherApiLinks } from '../../api/constants/open-weather-constants';
+import { units } from '../../api/constants/widget-constants';
+import {hour} from '../../api/constants/time-constants';
 import { widgetMessages } from '../../api/constants/widget-constants';
+import { isMetric } from '../../api/helpers/unit-helpers';
 import CurrentWeather from '../common/CurrentWeather';
 
 interface CityInformation {
@@ -14,6 +17,7 @@ interface CityInformation {
 }
 
 const { prepareText, unknownError } = widgetMessages;
+const { citiesData } = weatherApiLinks;
 
 const CitiesWidget = () => {
 
@@ -54,8 +58,8 @@ const CitiesWidget = () => {
 
         async function getCitiesWeatherData() {
             try {
-                const metricLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}&units=${units.METRIC.toLowerCase()}&appid=${openWeatherMapApiKey}`;
-                const imperialLink = `https://api.openweathermap.org/data/2.5/group?id=${Object.values(cityCodes).join(',')}}&units=${units.IMPERIAL.toLowerCase()}&appid=${openWeatherMapApiKey}`;
+                const metricLink = citiesData(units.METRIC);
+                const imperialLink = citiesData(units.IMPERIAL);
                 const metricResponse = await axios.get(metricLink);
                 const imperialResponse = await axios.get(imperialLink);
                 setCurrentMetricInformation(metricResponse.data.list);
@@ -72,7 +76,7 @@ const CitiesWidget = () => {
             getCitiesWeatherData();
             interval = setInterval(() => {
                 getCitiesWeatherData();
-            }, 60*60*1000);
+            }, hour);
         }, timeOutValue);
 
         return () => {
@@ -88,7 +92,7 @@ const CitiesWidget = () => {
 
     return (
         <div
-            className={`component weather-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
+            className={`component cities-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
         >
             { (currentMetricInformation.length !== 0 && currentImperialInformation.length !== 0) ?
                 <>
@@ -97,7 +101,7 @@ const CitiesWidget = () => {
                     <CurrentWeather
                         lon={currentMetricInformation[currentCityIndex].coord.lon.toFixed(2)}
                         lat={currentMetricInformation[currentCityIndex].coord.lat.toFixed(2)}
-                        currentTemperature={unit === units.METRIC ? currentMetricInformation[currentCityIndex].main.temp : currentImperialInformation[currentCityIndex].main.temp}
+                        currentTemperature={isMetric(unit) ? currentMetricInformation[currentCityIndex].main.temp : currentImperialInformation[currentCityIndex].main.temp}
                     />
                     <div
                         className="interval-setter"

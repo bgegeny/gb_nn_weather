@@ -1,5 +1,6 @@
-import {useAppSelector} from "../../api/hooks/redux-hooks";
-import {units} from "../../api/constants/open-weather-constants";
+import { useAppSelector } from '../../api/hooks/redux-hooks';
+import { isMetric } from '../../api/helpers/unit-helpers';
+import { sInMs } from '../../api/constants/time-constants';
 
 const HourlyWeatherWidget = (props: {
     forecast: Array<{ dt: number, temp: number }>
@@ -25,12 +26,12 @@ const HourlyWeatherWidget = (props: {
                         >
                             <thead>
                                 <tr>
-                                    {forecast.map(({ dt }, i) => <th key={i}><div>{new Date(dt*1000).getHours()}:00</div></th>)}
+                                    {forecast.map(({ dt }, i) => <th key={i}><div>{new Date(dt*sInMs).getHours()}:00</div></th>)}
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    {forecast.map(({ temp }, i) => <td key={i}><div>{`${temp} ${unit === units.METRIC ? '°C' : '°F'}`}</div></td>)}
+                                    {forecast.map(({ temp }, i) => <td key={i}><div>{`${temp} ${isMetric(unit) ? '°C' : '°F'}`}</div></td>)}
                                 </tr>
                             </tbody>
                         </table> : undefined

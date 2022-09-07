@@ -1,3 +1,8 @@
+export const units = {
+    METRIC: 'Metric',
+    IMPERIAL: 'Imperial'
+}
+
 export const widgetMessages = {
     prepareText: 'Getting the position information...',
     unknownError: 'Unknown Error occured, please try again later!',

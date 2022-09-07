@@ -1,5 +1,5 @@
 import { useAppSelector } from '../../api/hooks/redux-hooks';
-import { units } from '../../api/constants/open-weather-constants';
+import { isMetric } from '../../api/helpers/unit-helpers';
 
 const CurrentWeather = (props: {
     lon: string,
@@ -9,8 +9,6 @@ const CurrentWeather = (props: {
 
     const { lon, lat, currentTemperature} = props;
     const unit = useAppSelector(state => state.units.value);
-
-
 
     return (
         <>
@@ -22,8 +20,8 @@ const CurrentWeather = (props: {
             <div
                 className="current-temp pb-3 pt-3 border-bottom"
             >
-                <img alt='Thermometer' id="thermometer-img" src='./thermometer.jpg'/>
-                <div>Current Temperature: {`${currentTemperature} ${unit === units.METRIC ? '°C' : '°F'}`}</div>
+                <img alt="Thermometer" id="thermometer-img" src="./thermometer.jpg"/>
+                <div>Current Temperature: {`${currentTemperature} ${isMetric(unit) ? '°C' : '°F'}`}</div>
             </div>
         </>
 

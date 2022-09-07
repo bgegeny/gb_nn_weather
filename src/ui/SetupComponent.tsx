@@ -1,40 +1,39 @@
-import { useAppDispatch } from '../api/hooks/redux-hooks';
+import {useAppDispatch, useAppSelector} from '../api/hooks/redux-hooks';
 import { darkModeSlice } from '../api/redux/dark-mode-slice';
-import {units} from '../api/constants/open-weather-constants';
-import {unitsSlice} from '../api/redux/units-slice';
+import { unitsSlice } from '../api/redux/units-slice';
+import { units } from '../api/constants/widget-constants';
+import { isMetric } from '../api/helpers/unit-helpers';
 
-const SetupComponent = (props: {
-    darkMode: boolean,
-    unit: string,
-}) => {
+const SetupComponent = () => {
 
-    const { darkMode, unit } = props;
+    const darkMode = useAppSelector(state => state.darkMode.value);
+    const unit = useAppSelector(state => state.units.value);
 
     const dispatch = useAppDispatch();
 
     return (
         <div
-            className='component setup-component'
+            className="component setup-component"
         >
             <div
-                className='layout-selector'
+                className="layout-selector"
             >
                 <div
                     className="text-center"
                 >
-                    Page Layout
+                    Theme
                 </div>
                 <button
-                    className='btn btn-warning'
+                    className="btn btn-warning"
                     onClick={()=>{
                         dispatch(darkModeSlice.actions.toggle());
                     }}
                 >
-                    {darkMode ? "Dark Mode" : "Light Mode"}
+                    {darkMode ? 'Dark Mode' : 'Light Mode'}
                 </button>
             </div>
             <div
-                className='metric-selector'
+                className="metric-selector"
             >
                 <div
                     className="text-center"
@@ -42,12 +41,12 @@ const SetupComponent = (props: {
                     Unit
                 </div>
                 <button
-                    className='btn btn-warning'
+                    className="btn btn-warning"
                     onClick={()=>{
                         dispatch(unitsSlice.actions.toggle());
                     }}
                 >
-                    {unit === units.METRIC ? units.METRIC : units.IMPERIAL}
+                    {isMetric(unit) ? units.METRIC : units.IMPERIAL}
                 </button>
             </div>
         </div>

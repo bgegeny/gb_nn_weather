@@ -1,8 +1,8 @@
 import React from 'react';
 import {
     BrowserRouter, Routes, Route, Navigate,
-} from "react-router-dom";
-import Main from "./ui/Main";
+} from 'react-router-dom';
+import Main from './ui/Main';
 
 const App = () => {
     return (

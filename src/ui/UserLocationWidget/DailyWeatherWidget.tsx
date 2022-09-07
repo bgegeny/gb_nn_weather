@@ -1,5 +1,6 @@
-import {useAppSelector} from "../../api/hooks/redux-hooks";
-import {units} from "../../api/constants/open-weather-constants";
+import { useAppSelector } from '../../api/hooks/redux-hooks';
+import { isMetric } from '../../api/helpers/unit-helpers';
+import { sInMs } from '../../api/constants/time-constants';
 
 const DailyWeatherWidget = (props: {
     forecast: Array<{ dt: number, temp: { day: number, night: number } }>
@@ -26,12 +27,12 @@ const DailyWeatherWidget = (props: {
                     >
                         <thead>
                         <tr>
-                            {forecast.map(({ dt }, i) => <th key={i}>{new Date(dt*1000).toDateString()}</th>)}
+                            {forecast.map(({ dt }, i) => <th key={i}>{new Date(dt*sInMs).toDateString()}</th>)}
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            {forecast.map(({ temp }, i) => <td key={i}>{`${temp.day}/${temp.night} ${unit === units.METRIC ? '°C' : '°F'}`}</td>)}
+                            {forecast.map(({ temp }, i) => <td key={i}>{`${temp.day}/${temp.night} ${isMetric(unit) ? '°C' : '°F'}`}</td>)}
                         </tr>
                         </tbody>
                     </table> : undefined
@@ -39,7 +40,6 @@ const DailyWeatherWidget = (props: {
 
             </div>
         </>
-
     );
 }
 

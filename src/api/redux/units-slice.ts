@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { RootState } from '../../store'
-import { units } from "../constants/open-weather-constants";
-import {getLocalStorageValue, setLocalStorageValue} from "./slice-helper";
+import { units } from '../constants/widget-constants';
+import {getLocalStorageValue, setLocalStorageValue} from './slice-helper';
 
 interface UnitsState {
     value: string
