@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {getLocalStorageValue, setLocalStorageValue} from "./slice-helper";
+import { getLocalStorageValue, setLocalStorageValue } from './slice-helper';
 
 interface IntervalState {
     value: number
