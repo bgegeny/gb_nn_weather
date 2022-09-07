@@ -48,6 +48,7 @@ const UserLocationWidget = () => {
         const timeOutValue = nextRequestTime.getTime() - currentDate.getTime();
 
         async function getWeatherData() {
+            try {
                 const metricLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.METRIC.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${openWeatherMapApiKey}`;
                 const imperialLink = `https://api.openweathermap.org/data/2.5/onecall?units=${units.IMPERIAL.toLowerCase()}&lat=${latitude}&lon=${longitude}&exclude=minutely&appid=${openWeatherMapApiKey}`;
                 const metricResponse = await axios.get(metricLink);
@@ -59,25 +60,29 @@ const UserLocationWidget = () => {
                 setHourlyImperialForecast(imperialResponse.data.hourly.slice(1,13));
                 setDailyMetricForecast(metricResponse.data.daily.slice(1,7));
                 setDailyImperialForecast(imperialResponse.data.daily.slice(1,7));
+            } catch (error) {
+                setWidgetStateMsg(unknownError)
+                console.error(error);
+            }
         }
 
         async function getLocation() {
-            const link = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${openWeatherMapApiKey}`;
-            const response = await axios.get(link);
-            if(response.data[0]) {
-                setCityName(response.data[0].name);
+            try {
+                const link = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${openWeatherMapApiKey}`;
+                const response = await axios.get(link);
+                if(response.data[0]) {
+                    setCityName(response.data[0].name);
+                }
+            } catch (error) {
+                setWidgetStateMsg(unknownError)
+                console.error(error);
             }
         }
 
         const getUserLocationData = () => {
-            try {
                 if(latitude && longitude) {
                     getLocation();
                     getWeatherData();
-                }
-            }catch (error) {
-                    setWidgetStateMsg(unknownError)
-                    console.error(error);
                 }
             }
 
@@ -119,7 +124,7 @@ const UserLocationWidget = () => {
             className={`component user-location-component text-center border ${darkMode ? 'border-warning' : 'border-dark'} rounded`}
         >
             <div className="text-center fw-bold">Current Location</div>
-            { (longitude && latitude) ?
+            { ((longitude && latitude) && widgetStateMsg === prepareText) ?
                 <>
                     { cityName !== '' ? <div className="text-center">{cityName}</div> : undefined}
                     <CurrentWeather
