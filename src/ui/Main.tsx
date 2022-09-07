@@ -10,8 +10,8 @@ const Main = () => {
 
     return (
         <>
-            <div
-                className={`main ${darkMode ? 'dark-mode' : 'light-mode'}`}
+            <main
+                className={`${darkMode ? 'dark-mode' : 'light-mode'}`}
             >
                 <SetupComponent />
                 <div
@@ -21,7 +21,7 @@ const Main = () => {
                     <CitiesWidget />
                 </div>
 
-            </div>
+            </main>
         </>
     );
 }
